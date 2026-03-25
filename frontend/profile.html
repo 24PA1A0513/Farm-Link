@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile — FarmLink</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
+</head>
+<body data-page="profile">
+<div id="navbarMount"></div>
+
+<div class="app-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div style="padding:12px;margin-bottom:8px;background:var(--primary-pale);border-radius:var(--radius-lg);text-align:center">
+      <div style="font-size:2.5rem;margin-bottom:4px" id="profileAvatarEmoji">👤</div>
+      <div style="font-weight:700;font-size:.95rem" id="sidebarName"></div>
+      <div style="font-size:.78rem;color:var(--text-muted)" id="sidebarRole"></div>
+    </div>
+    <div class="sidebar-title" data-i18n="nav.dashboard">Navigation</div>
+    <a href="dashboard.html" class="sidebar-link"><span class="icon">🏠</span> <span data-i18n="nav.dashboard">Dashboard</span></a>
+    <a href="marketplace.html" class="sidebar-link"><span class="icon">🛒</span> <span data-i18n="nav.marketplace">Marketplace</span></a>
+    <a href="orders.html" class="sidebar-link"><span class="icon">📋</span> <span data-i18n="nav.myOrders">My Orders</span></a>
+    <div class="sidebar-title" style="margin-top:12px">Account</div>
+    <div class="sidebar-link active"><span class="icon">👤</span> <span data-i18n="profile.title">My Profile</span></div>
+    <div class="sidebar-link" onclick="handleLogout()"><span class="icon">🚪</span> <span data-i18n="nav.logout">Logout</span></div>
+  </aside>
+
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h1>👤 <span data-i18n="profile.title">My Profile</span></h1>
+        <div class="page-subtitle">Update your personal information and preferences</div>
+      </div>
+      <span class="badge badge-green" id="profileRoleBadge"></span>
+    </div>
+
+    <div class="grid-2" style="gap:24px;align-items:start">
+      <!-- Left: Avatar Card -->
+      <div class="card" style="text-align:center;padding:32px 24px">
+        <div style="font-size:5rem;margin-bottom:12px" id="profileAvatar">👤</div>
+        <div style="font-size:1.2rem;font-weight:800" id="profileName">—</div>
+        <div style="color:var(--text-muted);font-size:.88rem;margin-bottom:16px" id="profileEmail">—</div>
+        <span class="badge badge-green" id="profileRole"></span>
+        <div style="margin-top:20px">
+          <div class="form-group">
+            <label class="form-label">Profile Photo URL</label>
+            <input type="url" id="profilePhotoUrl" class="form-control" placeholder="https://example.com/photo.jpg">
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="previewAvatar()">Preview Photo</button>
+        </div>
+      </div>
+
+      <!-- Right: Profile Form -->
+      <div class="card">
+        <div class="section-title">✏️ Edit Profile</div>
+        <form id="profileForm">
+          <div class="form-row mb-4">
+            <div class="form-group">
+              <label class="form-label" data-i18n="auth.fullName">Full Name</label>
+              <input type="text" id="profileFormName" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" data-i18n="profile.phone">Phone Number</label>
+              <input type="tel" id="profilePhone" class="form-control" placeholder="+91 9876543210">
+            </div>
+          </div>
+
+          <div class="form-group mb-4" id="cropTypeGroup">
+            <label class="form-label" data-i18n="profile.cropType">Crop Speciality</label>
+            <select id="profileCropType" class="form-control">
+              <option value="">Select your crop type</option>
+              <option value="Grains">🌾 Grains (Rice, Wheat, Millet)</option>
+              <option value="Vegetables">🥦 Vegetables</option>
+              <option value="Fruits">🍎 Fruits</option>
+              <option value="Spices">🌶️ Spices & Herbs</option>
+              <option value="Dairy">🥛 Dairy & Animal Products</option>
+              <option value="Oils">🫒 Oils & Extracts</option>
+              <option value="Pulses">🫘 Pulses & Legumes</option>
+              <option value="Mixed">🌻 Mixed Farming</option>
+            </select>
+          </div>
+
+          <div class="form-group mb-4">
+            <label class="form-label" data-i18n="profile.address">Address</label>
+            <input type="text" id="profileAddress" class="form-control" placeholder="Village, District, State">
+          </div>
+
+          <div class="form-group mb-4">
+            <label class="form-label" data-i18n="profile.bio">Bio / About</label>
+            <textarea id="profileBio" class="form-control" rows="4" placeholder="Tell buyers about yourself, your farm, and farming practices..."></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" data-i18n="profile.save">Save Profile</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Stats row (only for farmers) -->
+    <div id="farmerStats" class="grid-4 mt-6 hidden">
+      <div class="stat-card">
+        <div class="stat-icon green">📦</div>
+        <div><div class="stat-value" id="statMyProducts">0</div><div class="stat-label">Products Listed</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange">🛒</div>
+        <div><div class="stat-value" id="statMyOrders">0</div><div class="stat-label">Orders Received</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon blue">💰</div>
+        <div><div class="stat-value" id="statMyRevenue">₹0</div><div class="stat-label">Total Revenue</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple">⭐</div>
+        <div><div class="stat-value" id="statMyRating">—</div><div class="stat-label">Avg. Rating</div></div>
+      </div>
+    </div>
+
+    <!-- Language Settings -->
+    <div class="card mt-6">
+      <div class="section-title">🌐 Language Settings</div>
+      <p style="color:var(--text-muted);font-size:.88rem;margin-bottom:16px">Choose your preferred language for the FarmLink interface.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <button class="btn btn-secondary" onclick="I18n.setLang('en');showToast('Language set to English','success')">🇬🇧 English</button>
+        <button class="btn btn-secondary" onclick="I18n.setLang('hi');showToast('भाषा हिंदी में बदली','success')">🇮🇳 हिंदी</button>
+        <button class="btn btn-secondary" onclick="I18n.setLang('ta');showToast('மொழி தமிழுக்கு மாற்றப்பட்டது','success')">🇮🇳 தமிழ்</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Firebase (compat SDK) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/api.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

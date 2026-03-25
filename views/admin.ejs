@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — FarmLink</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body data-page="admin">
+<div id="navbarMount"></div>
+
+<div class="app-layout">
+  <!-- Admin Sidebar -->
+  <aside class="sidebar">
+    <div style="padding:12px;margin-bottom:8px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:var(--radius-lg);text-align:center;color:#fff">
+      <div style="font-size:2rem;margin-bottom:4px">🛡️</div>
+      <div style="font-weight:800;font-size:.95rem">Admin Panel</div>
+      <div style="font-size:.72rem;opacity:.8">FarmLink</div>
+    </div>
+    <div class="sidebar-title">Analytics</div>
+    <div class="sidebar-link active"><span class="icon">📊</span> Overview</div>
+    <div class="sidebar-link" onclick="showAdminSection('charts')"><span class="icon">📈</span> Charts</div>
+    <div class="sidebar-link" onclick="showAdminSection('users')"><span class="icon">👥</span> Users</div>
+    <div class="sidebar-link" onclick="showAdminSection('products')"><span class="icon">🌾</span> Products</div>
+    <div class="sidebar-title" style="margin-top:16px">Settings</div>
+    <a href="/dashboard.html" class="sidebar-link"><span class="icon">🏠</span> Back to App</a>
+    <div class="sidebar-link" onclick="handleLogout()"><span class="icon">🚪</span> Logout</div>
+  </aside>
+
+  <main class="main-content">
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <h1>Admin Dashboard 🛡️</h1>
+        <div class="page-subtitle">Platform analytics and management overview</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="badge badge-green">● System Online</span>
+        <span style="font-size:.82rem;color:var(--text-muted)">Last updated: Just now</span>
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="grid-4 mb-6">
+      <div class="stat-card">
+        <div class="stat-icon blue">👥</div>
+        <div>
+          <div class="stat-value" id="statUsers">—</div>
+          <div class="stat-label">Total Users</div>
+          <div class="stat-change up">↑ 12.4% this month</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon green">🌾</div>
+        <div>
+          <div class="stat-value" id="statProducts">—</div>
+          <div class="stat-label">Products Listed</div>
+          <div class="stat-change up">↑ 8.1% this month</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon orange">📦</div>
+        <div>
+          <div class="stat-value" id="statOrders">—</div>
+          <div class="stat-label">Total Orders</div>
+          <div class="stat-change up">↑ 22.7% this month</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon purple">💰</div>
+        <div>
+          <div class="stat-value" id="statRevenue">—</div>
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-change up">↑ 18.9% this month</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="grid-2 mb-6">
+      <div class="chart-card">
+        <div class="chart-title">📊 Monthly Orders</div>
+        <div class="chart-wrap" style="height:260px">
+          <canvas id="ordersChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">💰 Revenue Trend (₹)</div>
+        <div class="chart-wrap" style="height:260px">
+          <canvas id="revenueChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row 2 + Top Farmers -->
+    <div class="grid-2 mb-6">
+      <div class="chart-card">
+        <div class="chart-title">🏆 Top Selling Products</div>
+        <div class="chart-wrap" style="height:280px">
+          <canvas id="topProductsChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">🧑‍🌾 Top Performing Farmers</div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:8px">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-size:1.5rem">🥇</span>
+            <div style="flex:1"><div style="font-weight:700;font-size:.9rem">Meena Nair</div><div style="font-size:.78rem;color:var(--text-muted)">A2 Ghee, Coconut Oil</div></div>
+            <div style="text-align:right"><div style="font-weight:800;color:var(--primary)">₹2,84,400</div><div style="font-size:.72rem;color:var(--text-muted)">342 orders</div></div>
+          </div>
+          <div style="height:1px;background:var(--border)"></div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-size:1.5rem">🥈</span>
+            <div style="flex:1"><div style="font-weight:700;font-size:.9rem">Savita Patil</div><div style="font-size:.78rem;color:var(--text-muted)">Mangoes, Green Chillies</div></div>
+            <div style="text-align:right"><div style="font-weight:800;color:var(--primary)">₹1,98,700</div><div style="font-size:.72rem;color:var(--text-muted)">289 orders</div></div>
+          </div>
+          <div style="height:1px;background:var(--border)"></div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-size:1.5rem">🥉</span>
+            <div style="flex:1"><div style="font-weight:700;font-size:.9rem">Arjun Singh</div><div style="font-size:.78rem;color:var(--text-muted)">Forest Honey, Spices</div></div>
+            <div style="text-align:right"><div style="font-weight:800;color:var(--primary)">₹1,56,650</div><div style="font-size:.72rem;color:var(--text-muted)">241 orders</div></div>
+          </div>
+          <div style="height:1px;background:var(--border)"></div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <span style="font-size:1.5rem">4️⃣</span>
+            <div style="flex:1"><div style="font-weight:700;font-size:.9rem">Ramesh Kumar</div><div style="font-size:.78rem;color:var(--text-muted)">Rice, Wheat Flour</div></div>
+            <div style="text-align:right"><div style="font-weight:800;color:var(--primary)">₹1,12,350</div><div style="font-size:.72rem;color:var(--text-muted)">198 orders</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="section-title">👥 All Users</div>
+    <div class="table-wrap mb-6">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Joined</th>
+            <th>Orders</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="usersTable">
+          <!-- Rendered by app.js -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="section-title">🔔 Recent Activity</div>
+    <div class="card">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:1.3rem">🛒</span>
+          <div style="flex:1"><div style="font-weight:600;font-size:.9rem">New Order Placed — ORD-2025-0044</div><div style="font-size:.78rem;color:var(--text-muted)">Raj Kumar · A2 Ghee × 1 · ₹1,200</div></div>
+          <span style="font-size:.75rem;color:var(--text-muted)">2 min ago</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:1.3rem">🌾</span>
+          <div style="flex:1"><div style="font-weight:600;font-size:.9rem">New Product Listed — Drumstick (Moringa)</div><div style="font-size:.78rem;color:var(--text-muted)">Lakshmi Devi · Vegetables · ₹70/bundle</div></div>
+          <span style="font-size:.75rem;color:var(--text-muted)">18 min ago</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:1.3rem">👤</span>
+          <div style="flex:1"><div style="font-weight:600;font-size:.9rem">New User Registered — Ankit Mehta (Buyer)</div><div style="font-size:.78rem;color:var(--text-muted)">ankit@buyer.com · Maharashtra</div></div>
+          <span style="font-size:.75rem;color:var(--text-muted)">1 hr ago</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:10px 0">
+          <span style="font-size:1.3rem">⭐</span>
+          <div style="flex:1"><div style="font-weight:600;font-size:.9rem">Review Submitted — A2 Cow Ghee (5 stars)</div><div style="font-size:.78rem;color:var(--text-muted)">Priya R. · "Best ghee I've ever had!"</div></div>
+          <span style="font-size:.75rem;color:var(--text-muted)">3 hr ago</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/app.js"></script>
+<script>
+function showAdminSection(section) {
+  document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+</script>
+</body>
+</html>

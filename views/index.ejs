@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FarmLink — India's digital marketplace connecting farmers directly to buyers. No middlemen, fair prices.">
+  <title>FarmLink — Farm Fresh, Direct to You</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
+
+  <!-- Firebase SDK (for Google Sign-In client side) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <style>
+    /* ── Language Selector ── */
+    .lang-bar {
+      position: fixed;
+      top: 14px;
+      right: 22px;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .lang-btn {
+      background: rgba(255,255,255,0.14);
+      border: 1.5px solid rgba(255,255,255,0.28);
+      color: #fff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      backdrop-filter: blur(8px);
+      letter-spacing: 0.3px;
+    }
+    .lang-btn.active, .lang-btn:hover {
+      background: rgba(255,255,255,0.32);
+      border-color: rgba(255,255,255,0.6);
+      transform: scale(1.06);
+    }
+
+    /* ── Divider with OR text ── */
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 14px 0;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+    .auth-divider::before,.auth-divider::after {
+      content:'';
+      flex:1;
+      height:1px;
+      background: var(--border);
+    }
+
+    /* ── Google Button ── */
+    .btn-google {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 11px 16px;
+      border: 1.5px solid var(--border-dark);
+      border-radius: var(--radius-md);
+      background: #fff;
+      color: #3c4043;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 4px;
+    }
+    .btn-google:hover {
+      background: #f8f9fa;
+      border-color: #4285F4;
+      box-shadow: 0 2px 12px rgba(66,133,244,0.18);
+      transform: translateY(-1px);
+    }
+    .btn-google svg { width:20px;height:20px;flex-shrink:0; }
+
+    /* Google loading spinner */
+    .google-loading { opacity:0.6; pointer-events:none; }
+  </style>
+</head>
+<body data-page="index">
+
+<!-- ── Language Bar ── -->
+<div class="lang-bar" id="langBar">
+  <span style="font-size:0.7rem;color:rgba(255,255,255,0.7);margin-right:2px">🌐</span>
+  <button class="lang-btn active" onclick="setLang('en')">EN</button>
+  <button class="lang-btn" onclick="setLang('hi')">हि</button>
+  <button class="lang-btn" onclick="setLang('te')">తె</button>
+  <button class="lang-btn" onclick="setLang('ta')">த</button>
+  <button class="lang-btn" onclick="setLang('kn')">ಕ</button>
+</div>
+
+<section class="hero-section">
+  <div class="hero-bg-pattern"></div>
+  <div class="hero-particles"></div>
+  <div class="hero-content">
+
+    <!-- Left: Hero Text -->
+    <div class="hero-text">
+      <div class="hero-badge" data-i18n="badge">🌿 Made in India · For Indian Farmers</div>
+      <h1>
+        <span data-i18n="h1_1">Buy Farm Fresh.</span><br>
+        <span class="highlight" data-i18n="h1_2">No Middlemen.</span><br>
+        <span data-i18n="h1_3">Fair Prices.</span>
+      </h1>
+      <p data-i18n="hero_p">FarmLink connects farmers directly to buyers across India. Get the freshest organic produce at honest prices, while supporting the hands that grow your food.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <a href="#" onclick="document.querySelector('[data-target=registerForm]').click()" class="btn btn-primary btn-lg" data-i18n="cta_sell">
+          🌾 Start Selling / Buying
+        </a>
+        <a href="/marketplace.html" class="btn btn-lg" style="background:rgba(255,255,255,0.12);color:#fff;border:1.5px solid rgba(255,255,255,0.25);" data-i18n="cta_browse">
+          Browse Marketplace →
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="hero-stat-val">12,400+</div><div class="hero-stat-label" data-i18n="stat_farmers">Active Farmers</div></div>
+        <div class="hero-stat"><div class="hero-stat-val">₹28 Cr+</div><div class="hero-stat-label" data-i18n="stat_revenue">Revenue Generated</div></div>
+        <div class="hero-stat"><div class="hero-stat-val">48 States</div><div class="hero-stat-label" data-i18n="stat_states">Pan India</div></div>
+      </div>
+    </div>
+
+    <!-- Right: Auth Card -->
+    <div style="display:flex;justify-content:center">
+      <div class="auth-card">
+        <div style="text-align:center;margin-bottom:20px">
+          <div style="font-size:2.5rem;margin-bottom:8px">🌾</div>
+          <div style="font-size:1.3rem;font-weight:900;color:var(--primary)">FarmLink</div>
+          <div style="font-size:0.82rem;color:var(--text-muted)" data-i18n="card_sub">Your Gateway to Farm-Fresh Products</div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-target="loginForm" data-i18n="tab_login">Login</button>
+          <button class="auth-tab" data-target="registerForm" data-i18n="tab_register">Register</button>
+        </div>
+
+        <!-- ── LOGIN FORM ── -->
+        <form class="auth-form active" id="loginForm">
+          <div class="auth-header">
+            <h2 data-i18n="login_title">Welcome back 👋</h2>
+            <p data-i18n="login_sub">Sign in to your FarmLink account</p>
+          </div>
+
+          <!-- Google Sign In -->
+          <button type="button" class="btn-google" id="googleSignInBtn" onclick="signInWithGoogle()">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            <span data-i18n="google_btn">Continue with Google</span>
+          </button>
+
+          <div class="auth-divider"><span data-i18n="or_text">or sign in with email</span></div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="label_email">Email Address</label>
+            <input type="email" id="loginEmail" class="form-control" placeholder="you@example.com" autocomplete="email" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="label_password">Password</label>
+            <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" autocomplete="current-password" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full btn-lg" data-i18n="btn_signin">Sign In →</button>
+          <div style="background:var(--primary-pale);border-radius:var(--radius-md);padding:12px 14px;font-size:0.78rem;color:var(--text-secondary)">
+            <strong data-i18n="demo_title">Demo Logins:</strong><br>
+            Buyer: <code>buyer@demo.com</code> / any password<br>
+            Farmer: <code>farmer@demo.com</code> / any password<br>
+            Admin: <code>admin@demo.com</code> / any password
+          </div>
+        </form>
+
+        <!-- ── REGISTER FORM ── -->
+        <form class="auth-form" id="registerForm">
+          <div class="auth-header">
+            <h2 data-i18n="reg_title">Create Account 🌱</h2>
+            <p data-i18n="reg_sub">Join thousands of farmers and buyers</p>
+          </div>
+
+          <!-- Google Sign Up -->
+          <button type="button" class="btn-google" onclick="signInWithGoogle()">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+            </svg>
+            <span data-i18n="google_signup">Sign up with Google</span>
+          </button>
+
+          <div class="auth-divider"><span data-i18n="or_email_text">or register with email</span></div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="label_name">Full Name</label>
+            <input type="text" id="regName" class="form-control" placeholder="Your full name" autocomplete="name" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="label_email">Email Address</label>
+            <input type="email" id="regEmail" class="form-control" placeholder="you@example.com" autocomplete="email" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="label_password">Password</label>
+            <input type="password" id="regPassword" class="form-control" placeholder="Min. 8 characters" autocomplete="new-password" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="label_role">I am a...</label>
+            <select id="regRole" class="form-control" required>
+              <option value="" data-i18n="role_select">Select your role</option>
+              <option value="Farmer" data-i18n="role_farmer">🧑‍🌾 Farmer — I want to sell my produce</option>
+              <option value="Buyer" data-i18n="role_buyer">🛒 Buyer — I want to buy farm products</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full btn-lg" data-i18n="btn_create">Create Account →</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Features Strip -->
+<section style="background:#fff;padding:32px 0;border-top:1px solid var(--border)">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;text-align:center">
+      <div><div style="font-size:2rem;margin-bottom:8px">🌿</div><div style="font-weight:700;color:var(--text-primary)" data-i18n="feat_organic">100% Organic</div><div style="font-size:.82rem;color:var(--text-muted)" data-i18n="feat_organic_sub">Certified natural produce</div></div>
+      <div><div style="font-size:2rem;margin-bottom:8px">🚚</div><div style="font-weight:700;color:var(--text-primary)" data-i18n="feat_delivery">Fast Delivery</div><div style="font-size:.82rem;color:var(--text-muted)" data-i18n="feat_delivery_sub">Within 24–48 hours</div></div>
+      <div><div style="font-size:2rem;margin-bottom:8px">💰</div><div style="font-weight:700;color:var(--text-primary)" data-i18n="feat_price">Fair Prices</div><div style="font-size:.82rem;color:var(--text-muted)" data-i18n="feat_price_sub">No hidden middlemen</div></div>
+      <div><div style="font-size:2rem;margin-bottom:8px">🔒</div><div style="font-weight:700;color:var(--text-primary)" data-i18n="feat_secure">Secure Payments</div><div style="font-size:.82rem;color:var(--text-muted)" data-i18n="feat_secure_sub">Razorpay encrypted</div></div>
+    </div>
+  </div>
+</section>
+
+<script src="/js/api.js"></script>
+<script src="/js/app.js"></script>
+<script src="/js/i18n.js"></script>
+<script src="/js/firebase-config.js"></script>
+</body>
+</html>

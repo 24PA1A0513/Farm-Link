@@ -1,0 +1,43 @@
+# ── Java / Maven ──────────────────────────────────
+target/
+backend/target/
+backend/local-jdk/
+*.class
+*.jar
+*.war
+*.ear
+*.log
+.mvn/wrapper/maven-wrapper.jar
+
+# ── IntelliJ / IDE ────────────────────────────────
+.idea/
+*.iml
+*.iws
+*.ipr
+.classpath
+.project
+.settings/
+
+# ── VS Code ───────────────────────────────────────
+.vscode/
+
+# ── Node / npm ────────────────────────────────────
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# ── Sensitive / Secret Files ──────────────────────
+# Firebase service account — NEVER commit this
+backend/src/main/resources/service-account.json
+
+# ── OS Files ──────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Environment / Config ─────────────────────────
+.env
+*.env.local
+
+# ── Misc ─────────────────────────────────────────
+*.bak
+*.tmp

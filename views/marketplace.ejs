@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="FarmLink Marketplace — Browse organic farm produce from verified Indian farmers.">
+  <title>Marketplace — FarmLink</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
+</head>
+<body data-page="marketplace">
+<div id="navbarMount"></div>
+
+<div class="app-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Navigate</div>
+    <a href="/dashboard.html" class="sidebar-link"><span class="icon">🏠</span> Dashboard</a>
+    <div class="sidebar-link active"><span class="icon">🛒</span> Marketplace</div>
+    <a href="/cart.html" class="sidebar-link"><span class="icon">🛍️</span> Cart</a>
+    <a href="/orders.html" class="sidebar-link"><span class="icon">📋</span> Orders</a>
+    <div class="sidebar-title" style="margin-top:16px">Categories</div>
+    <div class="sidebar-link" onclick="filterByCategory('All',this)"><span class="icon">🌾</span> All Products</div>
+    <div class="sidebar-link" onclick="filterByCategory('Grains',this)"><span class="icon">🌾</span> Grains</div>
+    <div class="sidebar-link" onclick="filterByCategory('Vegetables',this)"><span class="icon">🥦</span> Vegetables</div>
+    <div class="sidebar-link" onclick="filterByCategory('Fruits',this)"><span class="icon">🍎</span> Fruits</div>
+    <div class="sidebar-link" onclick="filterByCategory('Spices',this)"><span class="icon">🌶️</span> Spices</div>
+    <div class="sidebar-link" onclick="filterByCategory('Dairy &amp; Honey',this)"><span class="icon">🍯</span> Dairy &amp; Honey</div>
+    <div class="sidebar-link" onclick="filterByCategory('Oils',this)"><span class="icon">🫙</span> Oils</div>
+  </aside>
+
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h1>Marketplace 🛒</h1>
+        <div class="page-subtitle" id="mktCount">Loading products...</div>
+      </div>
+    </div>
+
+    <!-- Category Pills -->
+    <div class="tag-list mb-4" id="categoryPills"></div>
+
+    <!-- Search & Filter Bar -->
+    <div class="search-bar">
+      <div class="search-input-wrap flex-1">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="mktSearch" class="search-input" placeholder="Search products, farmers, categories...">
+      </div>
+      <select id="mktCategory" class="filter-select">
+        <option value="All">All Categories</option>
+        <option>Grains</option>
+        <option>Vegetables</option>
+        <option>Fruits</option>
+        <option>Spices</option>
+        <option>Dairy &amp; Honey</option>
+        <option>Oils</option>
+      </select>
+      <select id="mktSort" class="filter-select">
+        <option value="default">Sort: Featured</option>
+        <option value="price-asc">Price: Low to High</option>
+        <option value="price-desc">Price: High to Low</option>
+        <option value="rating">Highest Rated</option>
+      </select>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="grid-auto" id="mktGrid">
+      <!-- Rendered by app.js -->
+    </div>
+  </main>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>

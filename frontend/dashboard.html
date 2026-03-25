@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — FarmLink</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
+</head>
+<body data-page="dashboard">
+<div id="navbarMount"></div>
+
+<div class="app-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div style="padding:12px;margin-bottom:8px;background:var(--primary-pale);border-radius:var(--radius-lg);text-align:center">
+      <div style="font-size:2.5rem;margin-bottom:4px">👤</div>
+      <div style="font-weight:700;font-size:.95rem" id="userName"></div>
+      <div style="font-size:.78rem;color:var(--text-muted)" id="userRole"></div>
+      <span class="badge badge-green mt-2" id="userRoleBadge"></span>
+    </div>
+    <div class="sidebar-title" data-i18n="nav.dashboard">Navigation</div>
+    <div class="sidebar-link active"><span class="icon">🏠</span> <span data-i18n="nav.dashboard">Dashboard</span></div>
+    <a href="marketplace.html" class="sidebar-link"><span class="icon">🛒</span> <span data-i18n="nav.marketplace">Marketplace</span></a>
+    <a href="cart.html" class="sidebar-link"><span class="icon">🛍️</span> My Cart</a>
+    <a href="orders.html" class="sidebar-link"><span class="icon">📋</span> <span data-i18n="nav.myOrders">My Orders</span></a>
+    <div class="sidebar-title" style="margin-top:12px">Account</div>
+    <a href="profile.html" class="sidebar-link"><span class="icon">👤</span> <span data-i18n="profile.title">My Profile</span></a>
+    <div class="sidebar-link" onclick="handleLogout()"><span class="icon">🚪</span> <span data-i18n="nav.logout">Logout</span></div>
+    <!-- Language Toggle -->
+    <div style="margin-top:auto;padding-top:12px;border-top:1px solid var(--border)">
+      <div style="font-size:.7rem;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">🌐 Language</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" style="font-size:.72rem;padding:4px 8px" onclick="I18n.setLang('en');showToast('English','info')">EN</button>
+        <button class="btn btn-ghost btn-sm" style="font-size:.72rem;padding:4px 8px" onclick="I18n.setLang('hi');showToast('हिंदी','info')">हिं</button>
+        <button class="btn btn-ghost btn-sm" style="font-size:.72rem;padding:4px 8px" onclick="I18n.setLang('ta');showToast('தமிழ்','info')">தமிழ்</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- FARMER SECTION -->
+    <div id="farmerSection" class="hidden">
+      <!-- Farmer Tabs -->
+      <div style="display:flex;gap:8px;margin-bottom:24px;border-bottom:2px solid var(--border);padding-bottom:0">
+        <button class="farmer-tab active" id="tabProducts" onclick="switchFarmerTab('products')">📦 My Products</button>
+        <button class="farmer-tab" id="tabOrders" onclick="switchFarmerTab('orders')">📋 My Orders</button>
+      </div>
+
+      <!-- Products Tab -->
+      <div id="farmerProductsTab">
+        <div class="page-header">
+          <div>
+            <h1 data-i18n="dash.farmerTitle">Farmer Dashboard 🧑‍🌾</h1>
+            <div class="page-subtitle" data-i18n="dash.farmerSubtitle">Manage your products and track sales</div>
+          </div>
+          <span class="badge badge-green" id="farmerProductCount">0 Products</span>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid-4 mb-6">
+          <div class="stat-card">
+            <div class="stat-icon green">📦</div>
+            <div><div class="stat-value" id="statMyProducts">0</div><div class="stat-label">Products Listed</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon orange">🛒</div>
+            <div><div class="stat-value" id="statMyOrders">0</div><div class="stat-label">Orders Received</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon blue">💰</div>
+            <div><div class="stat-value" id="statMyRevenue">₹0</div><div class="stat-label">Total Revenue</div></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon purple">⭐</div>
+            <div><div class="stat-value" id="statMyRating">—</div><div class="stat-label">Avg. Rating</div></div>
+          </div>
+        </div>
+
+        <!-- Add Product Form -->
+        <div class="card mb-6">
+          <div class="section-title" data-i18n="dash.addProduct">➕ Add New Product</div>
+          <form id="farmerProductForm">
+            <div class="form-row mb-4">
+              <div class="form-group">
+                <label class="form-label">Product Name *</label>
+                <input type="text" id="pName" class="form-control" placeholder="e.g. Organic Basmati Rice" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Category *</label>
+                <select id="pCategory" class="form-control" required>
+                  <option value="">Select category</option>
+                  <option value="Grains">Grains</option>
+                  <option value="Vegetables">Vegetables</option>
+                  <option value="Fruits">Fruits</option>
+                  <option value="Spices">Spices</option>
+                  <option value="Dairy & Honey">Dairy &amp; Honey</option>
+                  <option value="Oils">Oils</option>
+                  <option value="Pulses">Pulses</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row mb-4">
+              <div class="form-group">
+                <label class="form-label">Price (₹) *</label>
+                <input type="number" id="pPrice" class="form-control" placeholder="Price per unit" min="1" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Quantity Available *</label>
+                <input type="number" id="pQty" class="form-control" placeholder="e.g. 200" min="1" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Unit *</label>
+                <select id="pUnit" class="form-control" required>
+                  <option value="kg">kg</option>
+                  <option value="litre">litre</option>
+                  <option value="dozen">dozen</option>
+                  <option value="bundle">bundle</option>
+                  <option value="piece">piece</option>
+                  <option value="quintal">quintal</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group mb-4">
+              <label class="form-label">Product Image URL</label>
+              <input type="url" id="pImage" class="form-control" placeholder="https://image-url.com/product.jpg">
+            </div>
+            <div class="form-group mb-4">
+              <label class="form-label">Description</label>
+              <textarea id="pDesc" class="form-control" rows="3" placeholder="Describe your product — freshness, origin, quality..."></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" data-i18n="dash.listProduct">🌾 List Product</button>
+          </form>
+        </div>
+
+        <!-- Farmer's Products -->
+        <div class="section-title" data-i18n="dash.myProducts">My Products</div>
+        <div class="grid-auto" id="farmerProductsGrid"></div>
+      </div>
+
+      <!-- Orders Tab (Farmer) -->
+      <div id="farmerOrdersTab" class="hidden">
+        <div class="page-header">
+          <div>
+            <h1>📋 Orders for My Products</h1>
+            <div class="page-subtitle">See buyers who ordered your products</div>
+          </div>
+          <select id="farmerOrderFilter" class="filter-select" onchange="filterFarmerOrders(this.value)">
+            <option value="All">All Statuses</option>
+            <option value="PENDING">Pending</option>
+            <option value="PROCESSING">Processing</option>
+            <option value="SHIPPED">Shipped</option>
+            <option value="DELIVERED">Delivered</option>
+          </select>
+        </div>
+        <div id="farmerOrdersList"></div>
+      </div>
+    </div>
+
+    <!-- BUYER SECTION -->
+    <div id="buyerSection" class="hidden">
+      <div class="page-header">
+        <div>
+          <h1 data-i18n="dash.buyerTitle">Welcome Back! 👋</h1>
+          <div class="page-subtitle" data-i18n="dash.buyerSubtitle">Discover fresh products from farmers near you</div>
+        </div>
+        <a href="marketplace.html" class="btn btn-primary" data-i18n="common.browseAll">Browse All →</a>
+      </div>
+
+      <!-- Buyer Stats -->
+      <div class="grid-4 mb-6">
+        <div class="stat-card">
+          <div class="stat-icon orange">🛒</div>
+          <div><div class="stat-value" id="buyerOrderCount">—</div><div class="stat-label">My Orders</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">✅</div>
+          <div><div class="stat-value" id="buyerDeliveredCount">—</div><div class="stat-label">Delivered</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon blue">💰</div>
+          <div><div class="stat-value" id="buyerSpent">₹—</div><div class="stat-label">Total Spent</div></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">🌾</div>
+          <div><div class="stat-value" id="buyerProductCount">—</div><div class="stat-label">Products Available</div></div>
+        </div>
+      </div>
+
+      <!-- Search -->
+      <div class="search-bar mb-6" style="margin-bottom:20px">
+        <div class="search-input-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="buyerSearch" class="search-input" placeholder="Search products, farmers...">
+        </div>
+        <select id="buyerCategory" class="filter-select">
+          <option value="All">All Categories</option>
+          <option>Grains</option><option>Vegetables</option><option>Fruits</option>
+          <option>Spices</option><option>Dairy &amp; Honey</option><option>Oils</option>
+        </select>
+        <a href="marketplace.html" class="btn btn-secondary btn-sm" data-i18n="common.browseAll">Full Marketplace →</a>
+      </div>
+
+      <div class="section-title">Featured Products</div>
+      <div class="grid-auto" id="buyerProductsGrid"></div>
+    </div>
+  </main>
+</div>
+
+<!-- Edit Product Modal -->
+<div class="modal-overlay hidden" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="modalProductName">Edit Product</div>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <form onsubmit="handleEditProduct(event)">
+      <input type="hidden" id="editProductId">
+      <div class="form-group mb-4">
+        <label class="form-label">Product Name</label>
+        <input type="text" id="editPName" class="form-control" required>
+      </div>
+      <div class="form-row mb-4">
+        <div class="form-group">
+          <label class="form-label">Price (₹)</label>
+          <input type="number" id="editPPrice" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Quantity</label>
+          <input type="number" id="editPQty" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Unit</label>
+          <select id="editPUnit" class="form-control">
+            <option value="kg">kg</option>
+            <option value="litre">litre</option>
+            <option value="dozen">dozen</option>
+            <option value="bundle">bundle</option>
+            <option value="piece">piece</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:12px">
+        <button type="button" class="btn btn-ghost flex-1" onclick="closeEditModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary flex-1">✅ Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+.farmer-tab {
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 10px 20px;
+  font-size: .92rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all .2s;
+  margin-bottom: -2px;
+}
+.farmer-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+.farmer-tab:hover { color: var(--primary); }
+</style>
+
+<!-- Firebase (compat SDK) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/api.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

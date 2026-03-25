@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — FarmLink</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌾</text></svg>">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body data-page="admin">
+<div id="navbarMount"></div>
+
+<div class="app-layout">
+  <!-- Admin Sidebar -->
+  <aside class="sidebar">
+    <div style="padding:12px;margin-bottom:8px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:var(--radius-lg);text-align:center;color:#fff">
+      <div style="font-size:2rem;margin-bottom:4px">🛡️</div>
+      <div style="font-weight:800;font-size:.95rem">Admin Panel</div>
+      <div style="font-size:.72rem;opacity:.8">FarmLink</div>
+    </div>
+    <div class="sidebar-title">Analytics</div>
+    <div class="sidebar-link active" id="sideOverview" onclick="showAdminSection('overview',this)"><span class="icon">📊</span> Overview</div>
+    <div class="sidebar-link" onclick="showAdminSection('charts',this)"><span class="icon">📈</span> Charts</div>
+    <div class="sidebar-title">Management</div>
+    <div class="sidebar-link" id="sideUsers" onclick="showAdminSection('users',this)"><span class="icon">👥</span> Users</div>
+    <div class="sidebar-link" id="sideProducts" onclick="showAdminSection('products',this)"><span class="icon">🌾</span> Products</div>
+    <div class="sidebar-link" id="sideOrders" onclick="showAdminSection('orders',this)"><span class="icon">📦</span> Orders</div>
+    <div class="sidebar-title" style="margin-top:16px">Settings</div>
+    <a href="dashboard.html" class="sidebar-link"><span class="icon">🏠</span> Back to App</a>
+    <div class="sidebar-link" onclick="handleLogout()"><span class="icon">🚪</span> Logout</div>
+  </aside>
+
+  <main class="main-content">
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <h1 id="adminPageTitle">Admin Dashboard 🛡️</h1>
+        <div class="page-subtitle" id="adminPageSubtitle">Platform analytics and management overview</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="badge badge-green">● System Online</span>
+        <span style="font-size:.82rem;color:var(--text-muted)" id="adminLastUpdated">—</span>
+      </div>
+    </div>
+
+    <!-- ═══ OVERVIEW SECTION ════════════════════════════════ -->
+    <div id="adminOverviewSection">
+      <!-- Stat Cards -->
+      <div class="grid-4 mb-6">
+        <div class="stat-card">
+          <div class="stat-icon blue">👥</div>
+          <div>
+            <div class="stat-value" id="statUsers">—</div>
+            <div class="stat-label">Total Users</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon green">🌾</div>
+          <div>
+            <div class="stat-value" id="statProducts">—</div>
+            <div class="stat-label">Products Listed</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange">📦</div>
+          <div>
+            <div class="stat-value" id="statOrders">—</div>
+            <div class="stat-label">Total Orders</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple">💰</div>
+          <div>
+            <div class="stat-value" id="statRevenue">—</div>
+            <div class="stat-label">Total Revenue</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="grid-2 mb-6">
+        <div class="chart-card">
+          <div class="chart-title">📊 Monthly Orders</div>
+          <div class="chart-wrap" style="height:260px">
+            <canvas id="ordersChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">💰 Revenue Trend (₹)</div>
+          <div class="chart-wrap" style="height:260px">
+            <canvas id="revenueChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2 mb-6">
+        <div class="chart-card">
+          <div class="chart-title">🏆 Top Selling Products</div>
+          <div class="chart-wrap" style="height:280px">
+            <canvas id="topProductsChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">🔔 Recent Activity</div>
+          <div id="recentActivity" style="display:flex;flex-direction:column;gap:10px;margin-top:8px;max-height:280px;overflow-y:auto"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ USERS SECTION ══════════════════════════════════ -->
+    <div id="adminUsersSection" class="hidden">
+      <div class="section-title">👥 All Users</div>
+      <div style="display:flex;gap:12px;margin-bottom:16px">
+        <input type="text" id="userSearch" class="form-control" placeholder="Search by name or email..." oninput="filterUsersTable(this.value)" style="max-width:320px">
+        <select id="userRoleFilter" class="filter-select" onchange="filterUsersTable()">
+          <option value="All">All Roles</option>
+          <option value="Farmer">Farmers</option>
+          <option value="Buyer">Buyers</option>
+          <option value="Admin">Admins</option>
+        </select>
+      </div>
+      <div class="table-wrap mb-6">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="usersTable">
+            <!-- Rendered by app.js -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ PRODUCTS SECTION ═══════════════════════════════ -->
+    <div id="adminProductsSection" class="hidden">
+      <div class="section-title">🌾 All Products</div>
+      <div style="display:flex;gap:12px;margin-bottom:16px">
+        <input type="text" id="adminProdSearch" class="form-control" placeholder="Search products..." oninput="filterAdminProducts(this.value)" style="max-width:320px">
+        <select id="adminProdCategory" class="filter-select" onchange="filterAdminProducts()">
+          <option value="All">All Categories</option>
+          <option>Grains</option><option>Vegetables</option><option>Fruits</option>
+          <option>Spices</option><option>Dairy &amp; Honey</option><option>Oils</option>
+        </select>
+      </div>
+      <div class="table-wrap mb-6">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Qty</th>
+              <th>Farmer</th>
+              <th>Rating</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminProductsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ═══ ORDERS SECTION ════════════════════════════════ -->
+    <div id="adminOrdersSection" class="hidden">
+      <div class="section-title">📦 All Orders</div>
+      <div style="display:flex;gap:12px;margin-bottom:16px">
+        <select id="adminOrderStatusFilter" class="filter-select" onchange="filterAdminOrders(this.value)">
+          <option value="All">All Statuses</option>
+          <option value="PENDING">Pending</option>
+          <option value="PROCESSING">Processing</option>
+          <option value="SHIPPED">Shipped</option>
+          <option value="DELIVERED">Delivered</option>
+          <option value="CANCELLED">Cancelled</option>
+        </select>
+      </div>
+      <div class="table-wrap mb-6">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Date</th>
+              <th>Items</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Update Status</th>
+            </tr>
+          </thead>
+          <tbody id="adminOrdersTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Firebase (compat SDK) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+<script src="js/firebase.js"></script>
+<script src="js/api.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
